@@ -1,19 +1,19 @@
 {
-    "name": "sample",
+    "name": "pointage",
     "cfg": {
-        "module": "sample",
-        "moduleLabel": "Sample module",
-        "aside": true,
+        "module": "paie",
+        "moduleLabel": "Pointage",
+        "aside": false,
         "app_mode": "default",
-        "ppp": "private",
+        "ppp": "partner",
         "logos": null
     },
     "cfgMenu": {
         "href": null
     },
     "cfgSlots": {
-        "menu": true,
-        "list": true,
+        "menu": false,
+        "list": false,
         "core": true,
         "header": true
     },

@@ -1,51 +1,98 @@
 <template>
-	<div class="py-2" v-if="$store.state.login">
-		<div>
-			<img src="@/assets/pebble-dev.png" alt="Pebble Dev" class="logo w-100">
+	<div v-if="$store.state.login">
+		<div class="bg-secondary border-dark text-center text-white" v-if="pointageCurrentStep != null">
+            Lundi 18 avril 2022
+        </div>
+
+		<div class="py-2" >
+			<Calendar 
+				:data="data"
+
+				v-if="pointageCurrentStep == null"
+
+				@add-pointage="addPointage"
+			/>
+
+			<InformationsGeneralesForm 
+				:data="data" 
+				:list-projets="listProjets" 
+				:list-postes="listPostes" 
+
+				@step="stepAction"
+				
+				v-else-if="pointageCurrentStep == pointageListSteps[0]"
+			/>
+
+			<WorkDateForm 
+				:data="data" 
+				
+				@step="stepAction"
+
+				v-else-if="pointageCurrentStep == pointageListSteps[1]"
+			/>
+
+			<WorkBreakChoice 				
+				@step="stepAction"
+				
+				v-else-if="pointageCurrentStep == pointageListSteps[2]"
+			/>
+
+			<WorkBreakForm 
+				:data="data" 
+				
+				@step="stepAction"
+				
+				v-else-if="pointageCurrentStep == pointageListSteps[3]"
+			/>
+
+
+			<OtherChoice 
+				@step="stepAction"
+
+				v-else-if="pointageCurrentStep == pointageListSteps[4]"
+			/>
+
+			<OtherChoiceList 
+				:list-other-choice="listOtherChoice" 
+				:data="data"
+				
+				@step="stepAction"
+				
+				v-else-if="pointageCurrentStep == pointageListSteps[5]"
+			/>
+
+			<Information 
+				:data="data" 
+				:selectedOtherChoice="selectedOtherChoice" 
+				
+				icon="1" 
+				
+				@step="stepAction"
+
+				v-else-if="pointageCurrentStep == pointageListSteps[6]"
+			/>
+			
+			<CommentaireForm 
+				:data="data" 
+				
+				@step="stepAction"
+				
+				v-else-if="pointageCurrentStep == pointageListSteps[7]"
+			/>
+
+			<Summary 
+				:data="data" 
+				
+				@step="stepAction"
+				
+				v-else-if="pointageCurrentStep == pointageListSteps[8]"
+			/>
+
+			<GoodBye v-else/>
+
+
+
 		</div>
-		<h1 class="text-center">Bienvenue dans votre nouvelle application</h1>
-		<hr>
-		
-		<form class="card my-4" method="post" @submit.prevent="recordNew()" v-if="tmpElement">
-			<div class="card-body">
-				<h2>Créer un nouvel enregistrement</h2>
-				<div class="mb-3">
-					<label for="element_name" class="form-label">Nom</label>
-					<input type="text" class="form-control" id="element_name" name="name" v-model="tmpElement.name">
-				</div>
-
-				<div class="mb-3">
-					<label for="element_description" class="form-label">Description</label>
-					<textarea type="text" class="form-control" id="element_description" name="description" v-model="tmpElement.description"></textarea>
-				</div>
-
-				<button class="btn btn-primary btn-lg" type="submit" :disabled="pending.element">
-					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="pending.element"></span>
-					Créer
-				</button>
-			</div>
-		</form>
-		
-		<h2>Bibliothèques pré-installés</h2>
-		<ul>
-			<li><a href="https://getbootstrap.com/docs/5.0/getting-started/introduction/" target="_blank">Bootstrap 5</a></li>
-			<li><a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap icons</a></li>
-			<li><a href="https://router.vuejs.org/" target="_blank">Vue Router</a></li>
-			<li><a href="https://vuex.vuejs.org/" target="_blank">Vue X (store)</a></li>
-		</ul>
-
-		<h2>Outils de développement</h2>
-		<ul>
-			<li><strong><a href="https://github.com/cairnmanagement/pebble-ui" target="_blank">pebble-ui</a></strong> (module vuejs)</li>
-			<li><strong><a href="https://github.com/cairnmanagement/appjs" target="_blank">APP.js</a></strong> (fonctions de gestion de l'application et de connexion à l'API)</li>
-		</ul>
-		<h2>Pour bien démarrer</h2>
-		<ol>
-			<li>Lisez la documentation de <strong><a href="https://github.com/cairnmanagement/sample-app">pebbleapp</a></strong> pour rester à jour</li>
-			<li>Configurez la base de votre application dans /src/config.json</li>
-			<li>Ne modifiez pas les sous-modules (/src/components/pebble-ui, /src/js/app). Ceux-ci se mettent à jour via pebbleapp.</li>
-			<li>Développez vos vues dans /src/views et vos composants d'interface dans /src/components</li>
-		</ol>
 	</div>
 </template>
 
@@ -59,49 +106,212 @@
 
 <script>
 
-import {mapState} from 'vuex';
+import Calendar from "@/components/Calendar.vue"
+import InformationsGeneralesForm from "@/components/InformationsGeneralesForm.vue"
+import WorkDateForm from "@/components/WorkDateForm.vue"
+import WorkBreakChoice from "@/components/WorkBreakChoice.vue"
+import WorkBreakForm from "@/components/WorkBreakForm.vue"
+import CommentaireForm from "@/components/CommentaireForm.vue"
+import OtherChoice from "@/components/OtherChoice.vue"
+import OtherChoiceList from "@/components/OtherChoiceList.vue"
+import Information from "@/components/Information.vue"
+import Summary from "@/components/Summary.vue"
+import GoodBye from "@/components/GoodBye.vue"
+
 
 export default {
 	name: 'Home',
 
+	// props: {
+	// 	pointageCurrentStep : String,
+	// 	pointageListSteps : Array
+	// },
+
 	data() {
 		return {
-			pending: {
-				element: false
-			}
+			data : {
+				'projet' : null, // String
+				'poste' : null, // string
+				'commentaire' : null, //string
+				'dd' : null, // datetime
+				'df' : null, // datetime
+				'dpd' : null, // dateTime
+				'duree' : null,
+				'dfp' : null, // dateTime
+				'information' : null, // object
+				'valider' : null
+			},
+			listProjets : [
+				{
+					'id' : 31,
+					'intitule' : '19_177 - Mur écran "anti-bruit"',
+					'ddp' : "2020-01-06",
+					'dfp' : "2022-06-30"
+				},
+				{
+					'id' : 330,
+					'intitule' : 'Convocation / Déplacement au siège',
+					'ddp' : "2021-01-01",
+					'dfp' : "2024-09-20"
+				},
+				{
+					'id' : 328,
+					'intitule' : 'Formations BRUZ',
+					'ddp' : "2021-01-01",
+					'dfp' : "2024-09-20"
+				},
+				{
+					'id' : 429,
+					'intitule' : '21_114 - Régénération caténaire RER B',
+					'ddp' : "2022-01-03",
+					'dfp' : "2022-07-31"
+				}
+			],
+			listPostes : [
+				{
+					'id' : 1,
+					'abreviation' : 'ASP',
+					'nom' : 'TES M - Agent de Sécurité du Personnel'
+				},
+				{
+					'id' : 2,
+					'abreviation': 'Ann',
+					'nom' : 'TES M - Annonceur/Sentinelle'
+				},
+				{
+					'id' : 3,
+					'abreviation' : 'RTO',
+					'nom' : 'RTO - Référent Technique Opérationnel'
+				},
+				{
+					'id' : 4,
+					'abreviation' : 'RSO',
+					'nom' : 'RSO - Représentant Sécurité Opérationnel'
+				},
+				{
+					'id' : 5,
+					'abreviation' : 'APS9',
+					'nom' : 'APS9 - Agent Prestataire S9'
+				}
+			],
+			listOtherChoice : [
+				{
+					'id' : 5,
+					'nom' : 'Covoiturage',
+					'textInformation' : 'Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro.'
+				},
+				{
+					'id': 7,
+					'nom' : 'prime',
+					'textInformation': 'Les primes sont calculées automatiquement en fonction de ...'
+				},
+				{
+					'id': 8,
+					'nom': 'Autre déclaration',
+					'textInformation': 'Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis'
+				}
+			],
+			selectedOtherChoice : null,
+
+			pointageCurrentStep : null,
+			pointageListSteps : [
+				'InformationsGeneralesForm',
+				'WorkDateForm',
+				'WorkBreakChoice',
+				'WorkBreakForm',
+				'OtherChoice',
+				'OtherChoiceList',
+				'Information',
+				'CommentaireForm',
+				'Summary',
+				'GoodBye'
+			]
 		}
 	},
 
-	computed: {
-		...mapState(['tmpElement'])
+	components : {
+		Calendar,
+		InformationsGeneralesForm,
+		WorkDateForm,
+		WorkBreakChoice,
+		WorkBreakForm,
+		CommentaireForm,
+		OtherChoice,
+		OtherChoiceList,
+		Information,
+		Summary,
+		GoodBye
 	},
 
-	methods: {
+	// watch: {
+	// 	pointageCurrentStep(val){
+	// 		return val;
+	// 	}
+	// },
+
+	methods : {
 		/**
-		 * Enregistre un nouvel élément.
-		 * Étape 1 : appel la fonction record
-		 * Étape 2 : enregistre la modification dans le store
-		 * Étape 3 : redirige la route vers le nouvel élément
+		 * S'occupe de la navigation entre les differents components
+		 * @param {String} payload 
 		 */
-		recordNew() {
-			this.$app.record(this, this.tmpElement, {
-				id: 0,
-				pending: this.pending.element
-			}).then((data) => {
-				console.log(data);
-				this.$store.dispatch('refreshElements', {
-					elements: [data]
-				});
-				this.$router.push('/element/'+data.id);
-			}).catch(this.$app.catchError);
-		}
-	},
+		stepAction(payload) {
+			let indexFind = this.pointageListSteps.indexOf(this.pointageCurrentStep);
+			let next;
 
-	mounted() {
-		this.$store.commit('tmpElement', {
-			name: '',
-			description: ''
-		});
+			if(payload == "submit") {
+				if(indexFind != -1) {
+					
+					switch (indexFind) {
+						case 6:
+							this.pointageCurrentStep = this.pointageListSteps[4];
+							break;
+					
+						default:
+							next = indexFind + 1;
+							this.pointageCurrentStep = this.pointageListSteps[next];
+							break;
+					}
+				} else {
+					this.pointageCurrentStep = this.pointageListSteps[1];
+					
+				}
+			}
+
+			if(payload == "cancel") {
+				if(indexFind != -1) {
+					switch (indexFind) {
+						case 4:
+							this.pointageCurrentStep = this.pointageListSteps[7];
+							break;
+
+						case 7:
+							this.pointageCurrentStep = this.pointageListSteps[4];
+							break;
+
+						case 2:
+							this.pointageCurrentStep = this.pointageListSteps[4];
+							break;
+					
+						default:
+							next = indexFind - 1;
+							this.pointageCurrentStep = this.pointageListSteps[next];
+							break;
+					}
+				} else {
+					this.pointageCurrentStep = this.pointageListSteps[0];
+					
+				}
+			}
+		},
+
+
+		addPointage(payload) {
+			this.pointageCurrentStep = this.pointageListSteps[0];
+
+			console.log(payload);
+
+			// this.data.dd == payload;
+		}
 	}
 }
 </script>

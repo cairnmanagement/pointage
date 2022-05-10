@@ -10,7 +10,7 @@
 
 		<template v-slot:header>
 			<div class="mx-2 d-flex align-items-center" v-if="openedElement">
-				<router-link to="/" custom v-slot="{ navigate, href }">
+				<router-link to="{path: '/', params: {'pointageCurrentStep': pointageCurrentStep, 'pointageListSteps': pointageListSteps}}" custom v-slot="{ navigate, href }">
 					<a class="btn btn-dark me-2" :href="href" @click="navigate">
 						<i class="bi bi-arrow-left"></i>
 					</a>
@@ -52,7 +52,7 @@
 		</template>
 
 		<template v-slot:core>
-			<div class="px-2 bg-light">
+			<div class="bg-light">
 				<router-view :cfg="cfg" v-if="isConnectedUser" />
 			</div>
 		</template>
@@ -80,7 +80,9 @@ export default {
 			pending: {
 				elements: true
 			},
-			isConnectedUser: false
+			isConnectedUser: false,
+			pointageCurrentStep: 'test', // exemple : InformationsGenerales
+			pointageListSteps: [] // exemple : InformationsGenerales, Summary...
 		}
 	},
 
