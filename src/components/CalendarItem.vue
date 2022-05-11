@@ -10,14 +10,21 @@
         </h2>
 
         <div :id="'flush-collapse' + id" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-            <div class="accordion-body">
+            <div class="accordion-body p-1">
                 <div v-if="pointages" >
-                    <SummaryItem v-for="pointage in pointages" :key="'pointage' + pointage.id" :data="pointage"/>
+                    <SummaryItem 
+                        v-for="(pointage, index) in pointages" 
+                        
+                        :key="'pointage' + pointage.id" 
+                        :data="pointage" 
+                        :last-el="checkIfLastEl(index)"
+                        
+                        @edit-pointage="$emit('edit-pointage', pointage)"/>
                 </div>
 
-                <div class="d-flex justify-content-center" v-if="!dayLock">
+                <div class="d-flex justify-content-center mb-2" v-if="!dayLock">
                     <button type="button" class="btn btn-outline-primary" @click="$emit('add-pointage')">
-                        <i class="bi bi-plus-circle"></i>
+                        <i class="bi bi-plus-circle pe-2"></i>
                         Enregistrer un pointage
                     </button>
                 </div>
@@ -85,7 +92,17 @@ export default {
         SummaryItem 
     },
     methods: {
-
+        /**
+         * Envoi au component true si le component est le dernier element du tableau ou que la journée est lock car validé 
+         * @param {Number} index 
+         * 
+         * @returns {Boolen}
+         */
+        checkIfLastEl(index) {
+            if(index == this.pointages.length - 1 && this.dayLock == true) {
+                return true;
+            }
+        }
     },
     beforeMount() {
         if(this.pointages.length > 0) {

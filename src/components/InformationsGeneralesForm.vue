@@ -2,6 +2,8 @@
     <FormWrapper title="Informations Générales"
         @submit="stepAction('submit')"
         @cancel="stepAction('cancel')">
+
+        <AlertMessage v-if="alertBox" alert-message="Veuillez remplir les champs avant de passer à la suite, merci" alert-type="danger"/>
         
         <div class="input-group mb-3">
             <select class="form-select" id="inputGroupSelect01" v-model="pointage.projet">
@@ -23,6 +25,7 @@
 <script>
 
 import FormWrapper from "@/components/FormWrapper.vue"
+import AlertMessage from "@/components/AlertMessage.vue";
 
 export default {
     props: {
@@ -33,12 +36,14 @@ export default {
 
     data() {
         return {
-            pointage: {}
+            pointage: {},
+            alertBox: false,
         }
     },
 
     components: {
-        FormWrapper
+        FormWrapper,
+        AlertMessage
     },
 
     methods: {
@@ -50,6 +55,8 @@ export default {
             if(options == "submit") {
                 if(this.data.projet && this.data.poste) {
                     return this.$emit('step', options);
+                } else {
+                    this.alertBox = true;
                 }
             } else {
                 return this.$emit('step', options);
@@ -58,6 +65,7 @@ export default {
     },
 
     beforeMount() {
+        console.log(this.data);
         this.pointage = this.data;
     }
 }

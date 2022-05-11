@@ -1,16 +1,19 @@
 <template>
 	<div v-if="$store.state.login">
-		<div class="bg-secondary border-dark text-center text-white" v-if="pointageCurrentStep != null">
-            Lundi 18 avril 2022
-        </div>
+		<nav class="navbar navbar-light mb-2" style="background-color: #e3f2fd;" v-if="pointageCurrentStep != null">
+			<div class="text-center w-100">
+				Lundi 23 Mai 2022
+			</div>
+		</nav>
 
-		<div class="py-2" >
+		<div class="p-2">
 			<Calendar 
 				:data="data"
 
 				v-if="pointageCurrentStep == null"
 
-				@add-pointage="addPointage"
+				@add-pointage="doPointage"
+				@edit-pointage="doPointage"
 			/>
 
 			<InformationsGeneralesForm 
@@ -88,7 +91,11 @@
 				v-else-if="pointageCurrentStep == pointageListSteps[8]"
 			/>
 
-			<GoodBye v-else/>
+			<GoodBye 
+			
+			@new-pointage="newPointage"
+
+			v-else/>
 
 
 
@@ -192,6 +199,11 @@ export default {
 					'id' : 5,
 					'abreviation' : 'APS9',
 					'nom' : 'APS9 - Agent Prestataire S9'
+				},
+				{
+					'id' : 888,
+					'abreviation' : '',
+					'nom' : 'dev Frontend'
 				}
 			],
 			listOtherChoice : [
@@ -242,12 +254,6 @@ export default {
 		Summary,
 		GoodBye
 	},
-
-	// watch: {
-	// 	pointageCurrentStep(val){
-	// 		return val;
-	// 	}
-	// },
 
 	methods : {
 		/**
@@ -304,13 +310,25 @@ export default {
 			}
 		},
 
-
-		addPointage(payload) {
+		/**
+		 * Lance le processus pour faire sont pointage a une date donnée 
+		 * @param {DateTime} payload 
+		 */
+		doPointage(payload) {
 			this.pointageCurrentStep = this.pointageListSteps[0];
 
-			console.log(payload);
+			if(payload) {
+				this.data = payload
+			}
 
-			// this.data.dd == payload;
+		},
+
+
+		/**
+		 * Permet de revenir sur la page calendar
+		 */
+		newPointage() {
+			this.pointageCurrentStep = null;
 		}
 	}
 }

@@ -20,7 +20,16 @@
         </div>
 
         <div class="accordion accordion-flush" id="accordionFlushExample">
-            <CalendarItem  v-for="day in week" :key="day" :title="day" :id="day" :day="getTheSpecialDay(day)" @add-pointage="$emit('add-pointage', getTheSpecialDay(day))"/>
+            <CalendarItem  
+                v-for="day in week" 
+                
+                :key="day" 
+                :title="day" 
+                :id="day" 
+                :day="getTheSpecialDay(day)" 
+                
+                @add-pointage="$emit('add-pointage', pointage)"
+                @edit-pointage="editPointage"/>
         </div>
     </div>
 </template>
@@ -75,7 +84,11 @@ export default {
         CalendarItem
     },
     methods: {
+        editPointage(payload) {
+            this.$emit('edit-pointage', payload);
+        }, 
         getTheSpecialDay(day) {
+            
             return day + ' ' + this.month_selected + ' ' + this.year_selected;
         }
     },

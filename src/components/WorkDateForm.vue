@@ -3,6 +3,8 @@
         @submit="stepAction('submit')"
         @cancel="stepAction('cancel')">
 
+            <AlertMessage v-if="alertBox" alert-message="Veuillez remplir les champs avant de passer à la suite, merci" alert-type="danger"/>
+
 			<div class="mb-3">
 				<span>Début: </span>
 
@@ -25,6 +27,7 @@
 <script>
 
 import FormWrapper from "@/components/FormWrapper.vue"
+import AlertMessage from "@/components/AlertMessage.vue";
 
 import { ref } from 'vue';
 import Datepicker from '@vuepic/vue-datepicker';
@@ -43,13 +46,15 @@ export default {
             beginDateWork : null,
             endDateWork : null,
             tmpDd: null,
-            tmpDf: null
+            tmpDf: null,
+            alertBox : false
         }
     },
 
     components: {
         Datepicker,
-        FormWrapper
+        FormWrapper,
+        AlertMessage
     },
 
     watch: {
@@ -61,8 +66,13 @@ export default {
             console.log(val);
             this.tmpDd.setHours(val.hours);
             this.tmpDd.setMinutes(val.minutes);
+            this.tmpDd.setSeconds('00');
 
-            this.pointage.dd = this.tmpDd.toString().replace(',', '');
+            console.log(this.tmpDd);
+
+            this.pointage.dd = this.tmpDd.getSqlDate(true);
+
+            console.log(this.pointage.dd);
 
             return val;
         },
@@ -71,7 +81,7 @@ export default {
             this.tmpDf.setHours(val.hours);
             this.tmpDf.setMinutes(val.minutes);
 
-            this.pointage.df = this.tmpDf.toLocaleString().replace(',', '');
+            this.pointage.df = this.tmpDf.getSqlDate(true);
 
             return val;
         },
@@ -84,15 +94,21 @@ export default {
          * @param {String} options 
          */
         stepAction(options) {
+            let refHd = {
+                hours : '00:00',
+                minutes : '00:00'
+            }
+
+            let refHf = {
+                hours : '00:00',
+                minutes : '00:00'
+            }
+
             if(options == "submit") {
-                if(this.hd && this.hf) {
-                    let dhd = new Date(this.data.dd);
-                    this.pointage.dd = dhd.setTime(this.hd);
-
-                    let dhf = new Date(this.data.df);
-                    this.pointage.df = dhf.setTime(this.hf);
-
+                if(this.hd != refHd && this.hf != refHf) {
                     return this.$emit('step', options);
+                } else {
+                    this.alertBox = true;
                 }
             } else {
                 return this.$emit('step', options);
@@ -101,26 +117,53 @@ export default {
     },
 
     beforeMount() {
+        console.log('data in workdate',this.data);
+
+        /** METTRE DANS UN AUTRE FICHIER  */
+            let pad = function(num) { return ('00'+num).slice(-2) };
+            Date.prototype.getSqlDate = function(time) {
+                time = typeof time === 'undefined' ? false:true;
+
+                let date = this.getFullYear()         + '-' +
+                pad(this.getMonth() + 1)  + '-' +
+                pad(this.getDate());
+                
+                if (time) {
+                    date += ' '+
+                        pad(this.getHours())      + ':' +
+                        pad(this.getMinutes())    + ':' +
+                        pad(this.getSeconds());
+                }
+
+                return date;
+            };
+        /*********** */
+
+
         let DisplayDate = {weekday: "long", month: "long", day: "numeric"};
+        DisplayDate = {weekday:'long',day: "numeric", month: "long"};
         this.tmpDd = new Date();
         this.tmpDf = new Date();
 
         this.pointage = this.data;
 
         if(this.pointage.dd) {
+            console.log('before date',this.tmpDd);
             this.tmpDd = new Date(this.pointage.dd);
+            console.log('after date',this.tmpDd);
         }
 
         if(this.pointage.df) {
             this.tmpDf = new Date(this.pointage.df);
         }
 
+
         this.beginDateWork = this.tmpDd.toLocaleDateString('fr-FR', DisplayDate);
         this.endDateWork = this.tmpDf.toLocaleDateString('fr-FR', DisplayDate);
         
         this.hd = ref({
             hours : this.tmpDd.getHours(),
-            minutes : this.tmpDd.getMinutes()
+            minutes : this.tmpDd.getMinutes(),
         });
 
         this.hf = ref({

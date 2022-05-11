@@ -3,7 +3,7 @@
         <h2 class="text-center py-2">Merci !</h2>
         <p class="text-center fs-3">Bonne journée </p>
 
-        <button class="btn btn-outline-primary w-100" type="button"> 
+        <button class="btn btn-outline-primary w-100" type="button" @click="$emit('new-pointage')"> 
             <i class="bi bi-plus-circle pe-2"></i>
 
             <span>Enregistrer un autre pointage</span>
