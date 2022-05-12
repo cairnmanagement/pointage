@@ -4,9 +4,11 @@
         "module": "paie",
         "moduleLabel": "Pointage",
         "aside": false,
-        "app_mode": "default",
+        "app_mode": "standalone",
         "ppp": "partner",
-        "logos": null
+        "logos": null,
+        "backAction": "/",
+        "backNavigation": false
     },
     "cfgMenu": {
         "href": null

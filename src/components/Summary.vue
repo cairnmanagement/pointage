@@ -3,7 +3,7 @@
         @submit="stepAction('submit')"
         @cancel="stepAction('cancel')">
 
-        <summaryItem :data="data" title="Récap" :last-el="true"/>
+        <summaryItem :data="data" title="Récap" :last-el="true" :can-edit="false"/>
     </FormWrapper>
 </template>
 

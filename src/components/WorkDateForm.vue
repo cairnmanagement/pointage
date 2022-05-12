@@ -3,9 +3,9 @@
         @submit="stepAction('submit')"
         @cancel="stepAction('cancel')">
 
-            <AlertMessage v-if="alertBox" alert-message="Veuillez remplir les champs avant de passer à la suite, merci" alert-type="danger"/>
+            <AlertMessage v-if="alertBox" alert-message="Veuillez remplir correctement les champs pour passer à la suite, merci" alert-type="danger"/>
 
-			<div class="mb-3">
+			<div class="mb-3 border-start border-4 ps-2" style="border-color: #A87EFC!important;">
 				<span>Début: </span>
 
 				<div class="d-flex align-items-center">
@@ -13,11 +13,22 @@
 				</div>
 			</div>
 
-			<div class="mb-3">
+			<div class="mb-3  border-start border-4 ps-2" style="border-color: #469BD6!important;">
 				<span>Fin:</span>
 
 				<div class="d-flex align-items-center">
-					<div class="w-50">{{endDateWork}} à</div><div class="w-50"><Datepicker v-model="hf" timePicker /></div>
+					<div class="w-50">
+                        <select class="form-select">
+                            <option>{{endDateWork}}</option>
+                            <option>{{endDateWorkOneMoreDay}}</option>
+                        </select>
+                    </div>
+                    <div class="px-2">
+                        à
+                    </div>
+                    <div class="w-50">
+                        <Datepicker v-model="hf" timePicker />
+                    </div>
 				</div>
 			</div>
     </FormWrapper>
@@ -45,6 +56,7 @@ export default {
             hf: null,
             beginDateWork : null,
             endDateWork : null,
+            endDateWorkOneMoreDay : null,
             tmpDd: null,
             tmpDf: null,
             alertBox : false
@@ -63,16 +75,11 @@ export default {
          * modifiée sur pointage.dd et pointage.df
          */
         hd(val) {
-            console.log(val);
             this.tmpDd.setHours(val.hours);
             this.tmpDd.setMinutes(val.minutes);
             this.tmpDd.setSeconds('00');
 
-            console.log(this.tmpDd);
-
             this.pointage.dd = this.tmpDd.getSqlDate(true);
-
-            console.log(this.pointage.dd);
 
             return val;
         },
@@ -80,6 +87,7 @@ export default {
         hf(val) {
             this.tmpDf.setHours(val.hours);
             this.tmpDf.setMinutes(val.minutes);
+            this.tmpDf.setSeconds('00');
 
             this.pointage.df = this.tmpDf.getSqlDate(true);
 
@@ -94,30 +102,15 @@ export default {
          * @param {String} options 
          */
         stepAction(options) {
-            let refHd = {
-                hours : '00:00',
-                minutes : '00:00'
+            if(options == "submit" && this.pointage.dd >= this.pointage.df) {
+                this.alertBox = true;
+                return 0;
             }
-
-            let refHf = {
-                hours : '00:00',
-                minutes : '00:00'
-            }
-
-            if(options == "submit") {
-                if(this.hd != refHd && this.hf != refHf) {
-                    return this.$emit('step', options);
-                } else {
-                    this.alertBox = true;
-                }
-            } else {
-                return this.$emit('step', options);
-            }
+            this.$emit('step', options);
         }
     },
 
     beforeMount() {
-        console.log('data in workdate',this.data);
 
         /** METTRE DANS UN AUTRE FICHIER  */
             let pad = function(num) { return ('00'+num).slice(-2) };
@@ -141,42 +134,43 @@ export default {
 
 
         let DisplayDate = {weekday: "long", month: "long", day: "numeric"};
-        DisplayDate = {weekday:'long',day: "numeric", month: "long"};
+        
         this.tmpDd = new Date();
         this.tmpDf = new Date();
 
         this.pointage = this.data;
 
         if(this.pointage.dd) {
-            console.log('before date',this.tmpDd);
             this.tmpDd = new Date(this.pointage.dd);
-            console.log('after date',this.tmpDd);
         }
 
         if(this.pointage.df) {
             this.tmpDf = new Date(this.pointage.df);
+        } else {
+            this.tmpDf = new Date(this.pointage.dd);
         }
 
 
         this.beginDateWork = this.tmpDd.toLocaleDateString('fr-FR', DisplayDate);
         this.endDateWork = this.tmpDf.toLocaleDateString('fr-FR', DisplayDate);
+
+        this.endDateWorkOneMoreDay = this.tmpDf;
+        this.endDateWorkOneMoreDay.setDate(this.tmpDf.getDate()+1);
+        this.endDateWorkOneMoreDay = this.endDateWorkOneMoreDay.toLocaleDateString('fr-FR', DisplayDate);
+
+        console.log(this.endDateWork);
+        console.log(this.endDateWorkOneMoreDay);
         
         this.hd = ref({
-            hours : this.tmpDd.getHours(),
-            minutes : this.tmpDd.getMinutes(),
+            hours : null,
+            minutes : null,
         });
 
         this.hf = ref({
-            hours : this.tmpDf.getHours(),
-            minutes : this.tmpDf.getMinutes()
+            hours : null,
+            minutes : null
         });
-    },
-
-    unmounted() {
-        console.log(this.data);
-        console.log(this.pointage);
     }
-
 }
 
 </script>

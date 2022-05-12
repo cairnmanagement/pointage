@@ -1,6 +1,6 @@
 <template>
     <div class="alert text" :class="'alert-' + alertType" role="alert">
-        Veuillez remplir les champs avant de passer à la suite, merci
+        {{alertMessage}}
     </div>
 </template>
 

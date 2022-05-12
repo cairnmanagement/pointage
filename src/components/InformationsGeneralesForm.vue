@@ -5,16 +5,16 @@
 
         <AlertMessage v-if="alertBox" alert-message="Veuillez remplir les champs avant de passer à la suite, merci" alert-type="danger"/>
         
-        <div class="input-group mb-3">
+        <div class="mb-3">
+            <label class="form-label">Projet: </label>
             <select class="form-select" id="inputGroupSelect01" v-model="pointage.projet">
-                <option disabled >Sélectionnez le Projet</option>
                 <option v-for="projetInList in listProjets" :key="'projetInList-' + projetInList.id">{{projetInList.intitule}}</option>
             </select>
         </div>
 
-        <div class="input-group mb-3">
+        <div class="mb-3">
+            <label class="form-label">Poste : </label>
             <select class="form-select" id="inputGroupSelect01" v-model="pointage.poste">
-                <option  disabled >Sélectionnez votre Poste</option>
                 <option v-for="posteInList in listPostes" :key="'posteInList-' + posteInList.id">{{posteInList.nom}}</option>
             </select>
         </div>
@@ -65,7 +65,6 @@ export default {
     },
 
     beforeMount() {
-        console.log(this.data);
         this.pointage = this.data;
     }
 }

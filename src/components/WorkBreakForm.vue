@@ -3,6 +3,8 @@
         @submit="stepAction('submit')"
         @cancel="stepAction('cancel')">
 
+        <AlertMessage v-if="alertBox" alert-message="Veuillez remplir les champs avant de passer à la suite, merci" alert-type="danger"/>
+
         <div class="mb-3">
             <span>Heure de début:</span>
 
@@ -23,6 +25,7 @@
 <script>
 
 import FormWrapper from "@/components/FormWrapper.vue"
+import AlertMessage from "@/components/AlertMessage.vue"
 
 import { ref } from 'vue';
 import Datepicker from '@vuepic/vue-datepicker';
@@ -39,13 +42,17 @@ export default {
         return {
             pointage: {},
             hd: null,
-            duree: null
+            duree: null,
+            tmpDpd: null,
+            tmpDfp: null,
+            alertBox : false
         }
     },
 
     components: {
         Datepicker,
-        FormWrapper
+        FormWrapper,
+        AlertMessage
     },
 
 
@@ -55,10 +62,25 @@ export default {
          * modifiée sur pointage.dd et pointage.df
          */
         hd(val) {
+            this.tmpDpd.setHours(val.hours);
+            this.tmpDpd.setMinutes(val.minutes);
+            this.tmpDpd.setSeconds('00');
+
+            this.pointage.dpd= this.tmpDpd.getSqlDate(true);
+
             return val;
         },
 
         hf(val) {
+            if(!this.pointage.dfp) {
+                this.tmpDfp = this.pointage.dpd;
+            }
+
+            this.tmpDfp.setHours(this.getHours() + val.hours);
+            this.tmpDfp.setMinutes(this.getMinutes() + val.minutes); 
+
+            this.pointage.dfp = this.tmpDfp.getSqlDate(true);
+
             return val;
         }
     },
@@ -69,23 +91,36 @@ export default {
          * @param {String} options 
          */
         stepAction(options) {
-            //verif si les champs on été rempli avant de passer a l'étape suivant 
-            return this.$emit('step', options)
+            if(options == 'submit') {
+                if(this.pointage.dpf != this.pointage.dfp){
+                    return this.$emit('step', options);
+                } else {
+                    this.alertBox = true;
+                }
+            } else {
+                return this.$emit('step', options);
+            }
+
+
         }
     },
 
     beforeMount() {
         this.pointage = this.data;
-        let tmpDpd = new Date();
+        this.tmpDpd = new Date();
 
         if(this.pointage.dpd) {
-            tmpDpd = new Date(this.pointage.dpd);
+            this.tmpDpd = new Date(this.pointage.dpd);
+        }
+
+        if(this.pointage.dfp) {
+            this.tmpDfp = new Date(this.pointage.dfp);
         }
 
 
         this.hd = ref({
-            hours : tmpDpd.getHours(),
-            minutes : tmpDpd.getMinutes() 
+            hours : this.tmpDpd.getHours(),
+            minutes : this.tmpDpd.getMinutes() 
         });
 
         this.duree = ref({

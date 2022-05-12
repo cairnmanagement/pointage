@@ -1,8 +1,8 @@
 <template>
 	<div v-if="$store.state.login">
 		<nav class="navbar navbar-light mb-2" style="background-color: #e3f2fd;" v-if="pointageCurrentStep != null">
-			<div class="text-center w-100">
-				Lundi 23 Mai 2022
+			<div class="text-center w-100 text-capitalize">
+				{{pointageDay}}
 			</div>
 		</nav>
 
@@ -172,6 +172,12 @@ export default {
 					'intitule' : '21_114 - Régénération caténaire RER B',
 					'ddp' : "2022-01-03",
 					'dfp' : "2022-07-31"
+				},
+				{
+					'id' : 689,
+					'intitule' : 'Pointage',
+					'ddp' : "2022-01-03",
+					'dfp' : "2022-07-31"
 				}
 			],
 			listPostes : [
@@ -203,7 +209,12 @@ export default {
 				{
 					'id' : 888,
 					'abreviation' : '',
-					'nom' : 'dev Frontend'
+					'nom' : 'Dev Frontend'
+				},
+				{
+					'id' : 888,
+					'abreviation' : '',
+					'nom' : 'dev Backend'
 				}
 			],
 			listOtherChoice : [
@@ -214,8 +225,8 @@ export default {
 				},
 				{
 					'id': 7,
-					'nom' : 'prime',
-					'textInformation': 'Les primes sont calculées automatiquement en fonction de ...'
+					'nom' : 'Prime',
+					'textInformation': 'Les primes sont calculées automatiquement.'
 				},
 				{
 					'id': 8,
@@ -237,7 +248,9 @@ export default {
 				'CommentaireForm',
 				'Summary',
 				'GoodBye'
-			]
+			],
+
+			pointageDay : null
 		}
 	},
 
@@ -315,11 +328,24 @@ export default {
 		 * @param {DateTime} payload 
 		 */
 		doPointage(payload) {
+			let DisplayDate = {weekday: "long", month: "long", day: "numeric", year:"numeric"};
+
 			this.pointageCurrentStep = this.pointageListSteps[0];
 
-			if(payload) {
-				this.data = payload
+			if(typeof payload == 'string') {
+				this.data.dd = payload + ' 00:00:00';
+				// let tmpCurrentDay = new Date(this.data.dd);
+
+				// this.pointageDay = tmpCurrentDay.toLocaleDateString('fr-FR', DisplayDate);
+			} else {
+				this.data = payload;
+
+
 			}
+
+			let tmpCurrentDay = new Date(this.data.dd);
+
+			this.pointageDay = tmpCurrentDay.toLocaleDateString('fr-FR', DisplayDate);
 
 		},
 
@@ -330,6 +356,6 @@ export default {
 		newPointage() {
 			this.pointageCurrentStep = null;
 		}
-	}
+	},
 }
 </script>
