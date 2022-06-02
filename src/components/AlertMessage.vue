@@ -1,6 +1,6 @@
 <template>
-    <div class="alert text" :class="'alert-' + alertType" role="alert">
-        {{alertMessage}}
+    <div class="alert text" :class="'alert-' + type" role="alert">
+        {{message}}
     </div>
 </template>
 
@@ -8,8 +8,8 @@
 
 export default {
     props: {
-        alertMessage: String,
-        alertType : String
+        message: String,
+        type : String
     }
 }
 

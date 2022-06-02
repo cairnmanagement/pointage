@@ -10,7 +10,7 @@
 
 		<template v-slot:header>
 			<div class="mx-2 d-flex align-items-center" v-if="openedElement">
-				<router-link to="{path: '/', params: {'pointageCurrentStep': pointageCurrentStep, 'pointageListSteps': pointageListSteps}}" custom v-slot="{ navigate, href }">
+				<router-link :to="{path: '/', params: {'pointageCurrentStep': pointageCurrentStep, 'pointageListSteps': pointageListSteps}}" custom v-slot="{ navigate, href }">
 					<a class="btn btn-dark me-2" :href="href" @click="navigate">
 						<i class="bi bi-arrow-left"></i>
 					</a>

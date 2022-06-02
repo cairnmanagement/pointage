@@ -3,7 +3,7 @@
         @submit="stepAction('submit')"
         @cancel="stepAction('cancel')">
 
-        <AlertMessage v-if="alertBox" alert-message="Veuillez remplir les champs avant de passer à la suite, merci" alert-type="danger"/>
+        <AlertMessage v-if="alertBox" message="Veuillez remplir les champs avant de passer à la suite, merci" type="danger"/>
         
         <div class="mb-3">
             <label class="form-label">Projet: </label>
@@ -66,6 +66,17 @@ export default {
 
     beforeMount() {
         this.pointage = this.data;
+
+        console.log(this.pointage);
+
+        if(!this.pointage.projet) {
+            this.pointage.projet = "";
+        }
+
+        if(!this.pointage.poste) {
+            this.pointage.poste = "";
+        }
+
     }
 }
 </script>

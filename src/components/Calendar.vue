@@ -29,9 +29,7 @@
                 :id="day"
 
                 :pointage-array="getAllPointageOfDay(day)"
-                
-                @add-pointage="$emit('add-pointage', day)"
-                @edit-pointage="editPointage"/>
+            />
         </div>
     </div>
 </template>
@@ -54,13 +52,14 @@ export default {
                     'dd' : '2022-05-02 8:00:00',
                     'df' : '2022-05-02 19:00:00',
                     'dpd' : '2022-05-02 12:00:00',
-                    'dfp' : '2022-05-02 13:00:00',
+                    'dfp' : '2022-05-03 13:00:00',
                     'duree' : '01:00:00',
                     'information' : null,
-                    'valider' : 'OUI'
+                    'valider' : 'OUI',
+                    'currentStep' : 'finish'
                 },
                 {
-                    'id' : 56,
+                    'id' : 69,
                     'projet' : 'Pointage',
                     'poste' : 'Dev Frontend',
                     'dd' : '2022-05-03 8:00:00',
@@ -69,10 +68,11 @@ export default {
                     'dfp' : '2022-05-03 13:00:00',
                     'duree' : '01:00:00',
                     'information' : null,
-                    'valider' : 'OUI'
+                    'valider' : 'OUI',
+                    'currentStep' : 'finsih'
                 },
                 {
-                    'id' : 56,
+                    'id' : 18,
                     'projet' : 'Pointage',
                     'poste' : 'Dev Frontend',
                     'dd' : '2022-05-04 8:00:00',
@@ -81,10 +81,11 @@ export default {
                     'dfp' : '2022-05-04 13:00:00',
                     'duree' : '01:00:00',
                     'information' : null,
-                    'valider' : 'NON'
+                    'valider' : 'NON',
+                    'currentStep' : 'finsih'
                 },
                 {
-                    'id' : 56,
+                    'id' : 1056,
                     'projet' : 'Pointage',
                     'poste' : 'Dev Frontend',
                     'dd' : '2022-05-05 8:00:00',
@@ -93,7 +94,8 @@ export default {
                     'dfp' : '2022-05-05 13:00:00',
                     'duree' : '01:00:00',
                     'information' : null,
-                    'valider' : 'NON'
+                    'valider' : 'NON',
+                    'currentStep' : 'OtherChoice'
                 },
             ],
             years: [
@@ -157,7 +159,7 @@ export default {
     beforeMount() {
         this.local_user = this.$store.state.login.pseudo;
         /***FOR THE DEMO */
-        this.local_user = 'John'
+        this.local_user = 'Amandine'
 
 
         this.pointage = this.data;
